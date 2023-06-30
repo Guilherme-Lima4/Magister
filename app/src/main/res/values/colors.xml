@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="ametista">#976DCF</color>
+    <color name="tekhelet">#562D8B</color>
+    <color name="roxo_palido">#E8D7F1</color>
+    <color name="nao_foto_azul">#92DCE5</color>
+    <color name="aero">#11B5E4</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+</resources>
