@@ -3,10 +3,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:layout_alignRight="@id/img_message_user1">
 
     <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/img_message_user"
+        android:id="@+id/img_message_user1"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_marginTop="8dp"
@@ -17,14 +18,13 @@
 
     <TextView
         android:id="@+id/txt_msg1"
-        android:layout_width="300dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
+        android:textSize="17sp"
         android:layout_marginEnd="8dp"
         android:background="@drawable/text_msg"
         android:padding="8dp"
-        app:layout_constraintEnd_toStartOf="@+id/img_message_user"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/img_message_user" />
+        app:layout_constraintEnd_toStartOf="@+id/img_message_user1"
+        app:layout_constraintTop_toTopOf="@+id/img_message_user1" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

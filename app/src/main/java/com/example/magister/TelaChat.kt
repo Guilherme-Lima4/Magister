@@ -6,8 +6,8 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-//import com.example.magister.TelaChat.Companion.EXTRA_USER_ID
 import com.example.magister.databinding.ActivityTelaChatBinding
 import com.example.magister.ui.fragments.BuscarFragment
 import com.google.firebase.auth.FirebaseAuth
@@ -33,29 +33,28 @@ class TelaChat : AppCompatActivity() {
 
         supportActionBar?.title = username
 
-        setupDummyData()
+        listenForMessages()
+        setupAdapter()
 
         binding.btChat.setOnClickListener {
             performSendMessage()
         }
+
+        // A função listenForMessages() será chamada automaticamente quando uma nova mensagem for adicionada ao Firestore
     }
 
     companion object {
         const val EXTRA_USER_ID = "EXTRA_USER_ID"
     }
 
-    private fun setupDummyData() {
+    private fun setupAdapter() {
         recyclerView = binding.recyclerChat
         adapter = GroupAdapter()
 
         recyclerView.adapter = adapter
 
-        adapter.add(ChatFromItem())
-        adapter.add(ChatToItem())
-        adapter.add(ChatFromItem())
-        adapter.add(ChatToItem())
+        recyclerView.layoutManager = LinearLayoutManager(this)
     }
-
 
     private fun performSendMessage() {
         val text = binding.editChat.text.toString()
@@ -67,7 +66,9 @@ class TelaChat : AppCompatActivity() {
         val db = FirebaseFirestore.getInstance()
         val collectionRef = db.collection("Mensagens")
 
-        val chatMessage = ChatMessage(text, timestamp, fromId, toId)
+        val conversationId = generateConversationId(fromId, toId)
+
+        val chatMessage = ChatMessage(text, timestamp, fromId, toId, conversationId)
         collectionRef.add(chatMessage)
             .addOnSuccessListener { documentReference ->
                 Log.d(TAG, "A mensagem foi salva: ${documentReference.id}")
@@ -77,14 +78,68 @@ class TelaChat : AppCompatActivity() {
             .addOnFailureListener { e ->
                 Log.e(TAG, "Erro ao salvar a mensagem no banco de dados", e)
             }
+
+
     }
 
+    private fun listenForMessages() {
+        val db = FirebaseFirestore.getInstance()
+        val collectionRef = db.collection("Mensagens")
 
+        val conversationId = generateConversationId(FirebaseAuth.getInstance().uid, toId)
+
+        collectionRef
+            .whereEqualTo("conversationId", conversationId)
+            .orderBy("timestamp")
+            .addSnapshotListener { snapshot, exception ->
+                if (exception != null) {
+                    Log.e(TAG, "Erro ao ler as mensagens: ", exception)
+                    return@addSnapshotListener
+                }
+
+                if (snapshot != null) {
+                    Log.d(TAG, "Total de mensagens: ${snapshot.documents.size}")
+                }
+
+                val messages = mutableListOf<Item<GroupieViewHolder>>() // Lista temporária para armazenar as mensagens
+
+                for (document in snapshot!!.documents) {
+                    val chatMessage = document.toObject(ChatMessage::class.java)
+
+                    if (chatMessage != null) {
+                        chatMessage.text?.let { Log.d(TAG, "Mensagem: $it") }
+
+                        if (chatMessage.fromId == FirebaseAuth.getInstance().uid) {
+                            messages.add(ChatToItem(chatMessage.text ?: ""))
+                        } else {
+                            messages.add(ChatFromItem(chatMessage.text ?: ""))
+                        }
+                    }
+                }
+
+                // Limpar o adaptador antes de adicionar as novas mensagens
+                adapter.clear()
+
+                // Adicionar as novas mensagens ao adaptador
+                adapter.update(messages)
+
+                // Rolar automaticamente para a última mensagem
+                recyclerView.scrollToPosition(adapter.itemCount - 1)
+            }
+    }
+
+    private fun generateConversationId(userId1: String?, userId2: String?): String {
+        // Ordenar os IDs dos usuários em ordem alfabética
+        val sortedUserIds = listOfNotNull(userId1, userId2).sortedWith(compareBy { it })
+
+        // Combinação dos IDs de usuário para formar o ID da conversa
+        return "${sortedUserIds[0]}_${sortedUserIds[1]}"
+    }
 }
 
-class ChatFromItem: Item<GroupieViewHolder>() {
+class ChatFromItem(private val messageText: String) : Item<GroupieViewHolder>() {
     override fun bind(viewHolder: GroupieViewHolder, position: Int) {
-        viewHolder.itemView.findViewById<TextView>(R.id.txt_msg).text = "From Message......."
+        viewHolder.itemView.findViewById<TextView>(R.id.txt_msg).text = messageText
     }
 
     override fun getLayout(): Int {
@@ -92,9 +147,9 @@ class ChatFromItem: Item<GroupieViewHolder>() {
     }
 }
 
-class ChatToItem: Item<GroupieViewHolder>() {
+class ChatToItem(private val messageText: String) : Item<GroupieViewHolder>() {
     override fun bind(viewHolder: GroupieViewHolder, position: Int) {
-        viewHolder.itemView.findViewById<TextView>(R.id.txt_msg1).text = "This is the to row text message that is longer"
+        viewHolder.itemView.findViewById<TextView>(R.id.txt_msg1).text = messageText
     }
 
     override fun getLayout(): Int {

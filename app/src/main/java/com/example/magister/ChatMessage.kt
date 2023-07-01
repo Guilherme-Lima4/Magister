@@ -5,15 +5,17 @@ import android.os.Parcelable
 
 class ChatMessage(
     var text: String? = "",
-    var timestamp: Long,
+    var timestamp: Long = 0,
     var fromId: String? = "",
-    var toId: String? = ""
+    var toId: String? = "",
+    var conversationId: String? = ""
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readString(),
         parcel.readLong(),
         parcel.readString(),
-       parcel.readString()
+        parcel.readString(),
+        parcel.readString()
     )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
@@ -29,7 +31,7 @@ class ChatMessage(
 
     companion object CREATOR : Parcelable.Creator<ChatMessage> {
         override fun createFromParcel(parcel: Parcel): ChatMessage {
-            return ChatMessage(parcel)
+            return ChatMessage(parcel.readString(), parcel.readLong(), parcel.readString(), parcel.readString())
         }
 
         override fun newArray(size: Int): Array<ChatMessage?> {
