@@ -22,14 +22,35 @@ class TelaChat : AppCompatActivity() {
     private lateinit var binding: ActivityTelaChatBinding
 
     private var toId: String? = null
+    private var username: String = ""
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityTelaChatBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val username = intent.getStringExtra("USERNAME")
-        toId = intent.getStringExtra(BuscarFragment.EXTRA_USER_ID)
+
+        val intentUsername = intent.getStringExtra("nameUserTarget")
+        toId = intent.getStringExtra("EXTRA_USER_ID")
+
+        if (intentUsername != null) {
+            // Se o extra "nameUserTarget" estiver presente, use o valor diretamente
+            username = intentUsername
+        } else {
+            // Caso contrário, busque o nome do usuário usando o ID do remetente
+            val db = FirebaseFirestore.getInstance()
+            val usersRef = toId?.let { db.collection("Usuarios").document(it) }
+
+            if (usersRef != null) {
+                usersRef.get().addOnSuccessListener { documentSnapshot ->
+                    username = documentSnapshot.getString("nome") ?: "Username"
+                    supportActionBar?.title = username
+                }.addOnFailureListener { exception ->
+                    // Lide com falhas ao obter o nome de usuário
+                }
+            }
+        }
 
         supportActionBar?.title = username
 
@@ -124,7 +145,9 @@ class TelaChat : AppCompatActivity() {
                 adapter.update(messages)
 
                 // Rolar automaticamente para a última mensagem
-                recyclerView.scrollToPosition(adapter.itemCount - 1)
+                if (adapter.itemCount >= 2) {
+                    recyclerView.scrollToPosition(adapter.itemCount - 1)
+                }
             }
     }
 
