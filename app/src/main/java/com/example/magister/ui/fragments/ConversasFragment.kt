@@ -1,5 +1,6 @@
 package com.example.magister.ui.fragments
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,7 +9,9 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.magister.ChatMessage
 import com.example.magister.LatestMessagesAdapter
+import com.example.magister.TelaChat
 import com.example.magister.databinding.ActivityConversasBinding
+//import com.example.magister.ui.activities.ChatActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
@@ -32,6 +35,26 @@ class ConversasFragment : Fragment() {
         binding.recyclerviewLatestMessages.adapter = adapter
         binding.recyclerviewLatestMessages.layoutManager = LinearLayoutManager(requireContext())
 
+        adapter.setOnItemClickListener(object : LatestMessagesAdapter.OnItemClickListener {
+            override fun onItemClick(chatMessage: ChatMessage) {
+                val userId = chatMessage.fromId
+
+                val db = FirebaseFirestore.getInstance()
+                val usersRef = userId?.let { db.collection("Usuarios").document(it) }
+
+                if (usersRef != null) {
+                    usersRef.get().addOnSuccessListener { documentSnapshot ->
+                        val username = documentSnapshot.getString("nome")
+                        val intent = Intent(requireContext(), TelaChat::class.java)
+                        intent.putExtra("USERNAME", username)
+                        intent.putExtra(BuscarFragment.EXTRA_USER_ID, userId)
+                        startActivity(intent)
+                    }.addOnFailureListener { exception ->
+                        // Lide com falhas ao obter o nome de usuário
+                    }
+                }
+            }
+        })
 
         val userId = FirebaseAuth.getInstance().currentUser?.uid
         val db = FirebaseFirestore.getInstance()
