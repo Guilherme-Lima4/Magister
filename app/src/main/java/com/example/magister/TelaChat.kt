@@ -136,16 +136,13 @@ class TelaChat : AppCompatActivity() {
             notificationContent.put("en", "You have a new message") // Mensagem em inglês
             notificationContent.put("pt", "Você recebeu uma nova mensagem") // Mensagem em português
 
-
             val notificationData = JSONObject()
             notificationData.put("userId", toId)
 
             val notification = JSONObject()
             notification.put("contents", notificationContent)
             notification.put("data", notificationData)
-            notification.put("small_icon", "logo")
             notification.put("include_player_ids", JSONArray().put(pushToken))
-            notification.put("sound", "notification_sound")
 
             // Enviar a notificação para o OneSignal
             OneSignal.postNotification(notification, object : OneSignal.PostNotificationResponseHandler {
