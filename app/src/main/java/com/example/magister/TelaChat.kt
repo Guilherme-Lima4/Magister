@@ -12,9 +12,13 @@ import com.example.magister.databinding.ActivityTelaChatBinding
 import com.example.magister.ui.fragments.BuscarFragment
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.onesignal.OneSignal
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
 import com.xwray.groupie.Item
+import org.json.JSONArray
+import org.json.JSONObject
+import java.util.UUID
 
 class TelaChat : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
@@ -90,17 +94,72 @@ class TelaChat : AppCompatActivity() {
         val conversationId = generateConversationId(fromId, toId)
 
         val chatMessage = ChatMessage(text, timestamp, fromId, toId, conversationId)
-        collectionRef.add(chatMessage)
+
+        val messagesRef = db.collection("Mensagens")
+        messagesRef.add(chatMessage)
             .addOnSuccessListener { documentReference ->
                 Log.d(TAG, "A mensagem foi salva: ${documentReference.id}")
-                Log.d(TAG, "Id do usuário que recebe a mensagem: $toId")
-                Log.d(TAG, "Id do usuário que envia a mensagem: $fromId")
+
+                // Obter o pushToken do usuário destinatário
+                getUserPushToken(toId) { pushToken ->
+                    // Enviar a notificação para o usuário destinatário
+                    sendNotificationToUser(pushToken)
+                    binding.editChat.text = null
+                }
             }
             .addOnFailureListener { e ->
                 Log.e(TAG, "Erro ao salvar a mensagem no banco de dados", e)
             }
+    }
+
+    private fun getUserPushToken(userId: String?, completion: (String) -> Unit) {
+        if (userId == null) return
+
+        val db = FirebaseFirestore.getInstance()
+        val userRef = db.collection("Usuarios").document(userId)
+        userRef.get()
+            .addOnSuccessListener { documentSnapshot ->
+                val pushToken = documentSnapshot.getString("pushToken") ?: ""
+                completion(pushToken)
+            }
+            .addOnFailureListener { exception ->
+                Log.e(TAG, "Erro ao obter o pushToken do usuário", exception)
+                completion("")
+            }
+    }
+
+    private fun sendNotificationToUser(pushToken: String) {
+        // Verificar se o pushToken existe
+        if (pushToken.isNotEmpty()) {
+            // Configurar os parâmetros da notificação
+            val notificationContent = JSONObject()
+            notificationContent.put("en", "You have a new message") // Mensagem em inglês
+            notificationContent.put("pt", "Você recebeu uma nova mensagem") // Mensagem em português
 
 
+            val notificationData = JSONObject()
+            notificationData.put("userId", toId)
+
+            val notification = JSONObject()
+            notification.put("contents", notificationContent)
+            notification.put("data", notificationData)
+            notification.put("small_icon", "logo")
+            notification.put("include_player_ids", JSONArray().put(pushToken))
+            notification.put("sound", "notification_sound")
+
+            // Enviar a notificação para o OneSignal
+            OneSignal.postNotification(notification, object : OneSignal.PostNotificationResponseHandler {
+                override fun onSuccess(response: JSONObject?) {
+                    Log.d(TAG, "Notificação enviada com sucesso para o usuário: $toId")
+                }
+
+                override fun onFailure(response: JSONObject?) {
+                    Log.e(TAG, "Erro ao enviar notificação para o usuário: $toId")
+                }
+            })
+        } else {
+            Log.e(TAG, "Push token do usuário não encontrado")
+        }
     }
 
     private fun listenForMessages() {

@@ -8,4 +8,6 @@
     <string name="title_escola">Instituição de ensino:</string>
     <string name="description">Visibilidade ativada</string>
     <string name="contatos">Contatos</string>
+    <string name="default_notification_channel_id">channel_id</string>
+
 </resources>
