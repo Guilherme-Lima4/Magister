@@ -14,11 +14,19 @@ class BuscarEntity(
     val idTargetUser: String?,
     val nameUserTarget: String?,
     val imageUserTarget: String?,
+    val materia1: String?,
+    val materia2: String?,
+    val materia3: String?,
+    val nomeEscolaUser: String?,
     val LastMessage: Long? = null,
 
     ) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readLong(),
+        parcel.readString(),
+        parcel.readString(),
+        parcel.readString(),
+        parcel.readString(),
         parcel.readString(),
         parcel.readString(),
         parcel.readString(),
@@ -32,6 +40,10 @@ class BuscarEntity(
         parcel.writeString(idTargetUser)
         parcel.writeString(nameUserTarget)
         parcel.writeString(imageUserTarget)
+        parcel.writeString(materia1)
+        parcel.writeString(materia2)
+        parcel.writeString(materia3)
+        parcel.writeString(nomeEscolaUser)
         parcel.writeValue(LastMessage)
     }
 

@@ -58,9 +58,13 @@ class TelaContatos : AppCompatActivity() {
                 for (document in querySnapshot) {
                     val fotoUrl = document.getString("fotoUrl")
                     val nomeUsuario = document.getString("nome")
+                    val escolaUser = document.getString("escola")
+                    val materia1 = document.getString("materia 1")
+                    val materia2 = document.getString("materia 2")
+                    val materia3 = document.getString("materia 3")
 
-                    if (fotoUrl != null && nomeUsuario != null) {
-                        val user = User(fotoUrl, nomeUsuario)
+                    if (fotoUrl != null && nomeUsuario != null && escolaUser != null && materia1 != null && materia2 != null && materia3 != null) {
+                        val user = User(fotoUrl, nomeUsuario, escolaUser, materia1, materia2, materia3)
                         //adapter.add(UserItem(user))
                     }
                 }
@@ -93,8 +97,12 @@ class TelaContatos : AppCompatActivity() {
 
 
 
-    class User(var fotoUrl: String = "", var nome: String = "", var uid: String = "", var token: String = "", var online: Boolean = false): Parcelable{ //método para poder acessar o nome e a url da foto
+    class User(var fotoUrl: String = "", var nome: String = "", var uid: String = "", var escola: String = "", var materia1: String = "", var materia2: String = "", var materia3: String = "", var token: String = "", var online: Boolean = false): Parcelable{ //método para poder acessar os atributos do usuário
         constructor(parcel: Parcel) : this(
+            parcel.readString() ?: "",
+            parcel.readString() ?: "",
+            parcel.readString() ?: "",
+            parcel.readString() ?: "",
             parcel.readString() ?: "",
             parcel.readString() ?: "",
             parcel.readString() ?: "",
@@ -106,6 +114,10 @@ class TelaContatos : AppCompatActivity() {
             parcel.writeString(fotoUrl)
             parcel.writeString(nome)
             parcel.writeString(uid)
+            parcel.writeString(escola)
+            parcel.writeString(materia1)
+            parcel.writeString(materia2)
+            parcel.writeString(materia3)
             parcel.writeString(token)
             parcel.writeInt(if (online) 1 else 0)
         }
@@ -120,6 +132,14 @@ class TelaContatos : AppCompatActivity() {
             val nome: String
                 get() = Unit.toString()
             val uid: String
+                get() = Unit.toString()
+            val escola: String
+                get() = Unit.toString()
+            val materia1: String
+                get() = Unit.toString()
+            val materia2: String
+                get() = Unit.toString()
+            val materia3: String
                 get() = Unit.toString()
             val token: String
                 get() = Unit.toString()

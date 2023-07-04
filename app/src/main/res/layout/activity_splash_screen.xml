@@ -22,11 +22,13 @@
     <ImageView
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:src="@drawable/mil_ideias"
         android:layout_marginTop="350dp"
-        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginBottom="55dp"
+        android:src="@drawable/mil_ideias"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/imagemLogo"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/imagemLogo" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

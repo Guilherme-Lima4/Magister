@@ -21,7 +21,7 @@
     android:background="@drawable/background">
 
     <ImageView
-        android:id="@+id/logo"
+        android:id="@+id/logo1"
         android:layout_width="150dp"
         android:layout_height="150dp"
         android:src="@drawable/logo2"
@@ -35,7 +35,7 @@
         style="@style/ContainerComponents2"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/logo"/>
+        app:layout_constraintTop_toBottomOf="@id/logo1"/>
 
     <TextView
         android:id="@+id/text_cadastre_se"
@@ -55,7 +55,9 @@
         android:id="@+id/edit_nome"
         style="@style/Edit_Text"
         android:hint="Nome"
+        android:textColorHint="@color/ametista"
         android:inputType="text"
+        android:textColor="@color/tekhelet"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/text_cadastre_se"/>
@@ -64,7 +66,9 @@
         android:id="@+id/edit_email1"
         style="@style/Edit_Text"
         android:hint="Email"
+        android:textColorHint="@color/ametista"
         android:inputType="textEmailAddress"
+        android:textColor="@color/tekhelet"
         android:drawableLeft="@drawable/ic_email"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -74,8 +78,10 @@
         android:id="@+id/edit_senha1"
         style="@style/Edit_Text"
         android:hint="Senha"
+        android:textColorHint="@color/ametista"
         android:drawableLeft="@drawable/ic_key"
         android:inputType="textPassword"
+        android:textColor="@color/tekhelet"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/edit_email1"/>
@@ -96,8 +102,10 @@
         android:id="@+id/edit_confirmar_senha"
         style="@style/Edit_Text"
         android:hint="Confirme a senha"
+        android:textColorHint="@color/ametista"
         android:drawableLeft="@drawable/ic_key"
         android:inputType="textPassword"
+        android:textColor="@color/tekhelet"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/edit_senha1"/>
@@ -165,6 +173,8 @@
         android:id="@+id/edit_escola"
         style="@style/Edit_Text"
         android:hint="Ex: Fatec Ferraz de Vasconcelos"
+        android:textColorHint="@color/ametista"
+        android:textColor="@color/tekhelet"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/text_escola"/>

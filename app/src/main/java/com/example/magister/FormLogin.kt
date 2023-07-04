@@ -35,6 +35,10 @@ class FormLogin : AppCompatActivity() {
             IrParaTelaCadastro()
         }
 
+        binding.txtEsqueceuSenha.setOnClickListener {
+            IrParaTelaRecSenha()
+        }
+
         binding.eye.setOnClickListener {//Código para fazer a senha ficar vísivel
             val editTextPassword = findViewById<EditText>(R.id.edit_senha)
             val imageButtonShowPassword = findViewById<ImageButton>(R.id.eye)
@@ -97,6 +101,11 @@ class FormLogin : AppCompatActivity() {
     private fun IrParaTelaPrincipal() {
         val TelaPrincipal = Intent(this, TelaPrincipal::class.java)
         startActivity(TelaPrincipal)
+    }
+
+    private fun IrParaTelaRecSenha() {
+        val TelaRecSenha = Intent(this, TelaRecSenha::class.java)
+        startActivity(TelaRecSenha)
     }
 
     //configuração para sair do app quando apertar o botão voltar

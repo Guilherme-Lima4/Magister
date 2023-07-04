@@ -89,7 +89,6 @@ class TelaChat : AppCompatActivity() {
         if (fromId == null) return
 
         val db = FirebaseFirestore.getInstance()
-        val collectionRef = db.collection("Mensagens")
 
         val conversationId = generateConversationId(fromId, toId)
 
